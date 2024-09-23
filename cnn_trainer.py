@@ -10,6 +10,7 @@ model_dir = sys.argv[2];
 if(os.path.isdir(model_dir)):
     print(model_dir + "Esiste già");
     exit(1);
+os.mkdir(model_dir);
 with tf.device('/GPU:0'):
     train_dataset, validation_dataset = keras.preprocessing.image_dataset_from_directory(source_dir, validation_split=0.2, subset="both", seed=665, label_mode="categorical");
     model = keras.models.Sequential()
@@ -31,15 +32,15 @@ with tf.device('/GPU:0'):
                                 monitor='val_accuracy', 
                                 save_best_only=True)
 
-    early_stopping = keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=2, min_delta=0.05 ,restore_best_weights=True)
+    early_stopping = keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=3, min_delta=0.1 ,restore_best_weights=True)
 
 
     hist = model.fit(train_dataset, epochs=12, validation_data=validation_dataset, 
                     callbacks=[checkpoint, early_stopping])
 
     # Salva la storia in un file pickle
-    with open(os.path.join(model_dir, os.path.basename(source_dir))+'-training_history.pkl', 'wb') as file_pi:
+    with open(os.path.join(model_dir, os.path.dirname(model_dir))+'-training_history.pkl', 'wb') as file_pi:
         pickle.dump(hist.history, file_pi)
 
         #tf.saved_model.save(model, os.path.join(os.getcwd(), os.path.basename(source_dir)+"-Model"))
-    model.save(filepath=os.path.join(model_dir, os.path.basename(source_dir)+"-LAST_EPOCH.keras"))
+    model.save(filepath=os.path.join(model_dir, os.path.dirname(model_dir)+"-LAST_EPOCH.keras"))
