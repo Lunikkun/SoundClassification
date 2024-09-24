@@ -28,19 +28,19 @@ with tf.device('/GPU:0'):
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     model.summary()
 
-    checkpoint = keras.callbacks.ModelCheckpoint(filepath=os.path.join(os.getcwd(), os.path.basename(source_dir)+"_best.keras"), 
+    checkpoint = keras.callbacks.ModelCheckpoint(filepath=os.path.join(model_dir, os.path.basename(model_dir)+"_best.keras"), 
                                 monitor='val_accuracy', 
                                 save_best_only=True)
 
-    early_stopping = keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=3, min_delta=0.1 ,restore_best_weights=True)
+    early_stopping = keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=2, min_delta=0.075 ,restore_best_weights=True)
 
 
     hist = model.fit(train_dataset, epochs=12, validation_data=validation_dataset, 
                     callbacks=[checkpoint, early_stopping])
 
     # Salva la storia in un file pickle
-    with open(os.path.join(model_dir, os.path.dirname(model_dir))+'-training_history.pkl', 'wb') as file_pi:
+    with open(os.path.join(model_dir, os.path.basename(model_dir))+'-training_history.pkl', 'wb') as file_pi:
         pickle.dump(hist.history, file_pi)
 
         #tf.saved_model.save(model, os.path.join(os.getcwd(), os.path.basename(source_dir)+"-Model"))
-    model.save(filepath=os.path.join(model_dir, os.path.dirname(model_dir)+"-LAST_EPOCH.keras"))
+    model.save(filepath=os.path.join(model_dir, os.path.basename(model_dir)+"-LAST_EPOCH.keras"))

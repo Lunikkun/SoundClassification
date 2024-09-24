@@ -2,11 +2,12 @@ import sys, os
 import librosa
 import soundfile as sf
 from my_utils import clone_hierarchy
-
+import noisereduce as nr
 def audio_cutter(file_name, dest_dir, split_lenght):
 
     audio, sr = librosa.load(file_name);
-    audio = librosa.util.normalize(audio);
+    audio = librosa.util.normalize(audio, threshold = 0.2);
+    audio = nr.reduce_noise(y=audio, sr=sr)
     buffer = split_lenght * sr
     samples_total = len(audio)
     samples_wrote = 0

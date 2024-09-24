@@ -14,7 +14,7 @@ def create_spectrogram(audio_file, image_file, spectrogram_repr):
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     y, sr = librosa.load(audio_file)
     if(spectrogram_repr == "mel"):
-        ms = librosa.feature.melspectrogram(y=y, sr=sr)
+        ms = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=512, hop_length=128)
         log_ms = librosa.power_to_db(ms, ref=np.max)
     elif(spectrogram_repr == "mfcc"):
         ms = librosa.feature.mfcc(y=y, sr=sr)
